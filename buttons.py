@@ -18,7 +18,6 @@ class GPIOSwitch:
 		self.debounce_period = debounce_period
 		self.debounce_until = 0
 		self.__previous_value = None
-		self.__previous_time = None
 		self.__ignore_until = 0
 		self.check(time.time())
 
@@ -34,10 +33,7 @@ class GPIOSwitch:
 		if value == self.__previous_value:
 			return None
 
-		if value == Circuit.closed:
-			self.debounce_until = timestamp + self.debounce_period
-
-		self.__previous_time = timestamp
+		self.debounce_until = timestamp + self.debounce_period
 		self.__previous_value = value
 		return value
 
