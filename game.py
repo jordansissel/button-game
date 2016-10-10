@@ -10,6 +10,8 @@ class Game:
 		self.Color = color
 		self.Neopixel = neopixel
 		self.LED_OFF = self.Color(0,0,0)
+		self.tick_interval = 0.005
+
 		self.switches = [
 			GPIOSwitch(5, gpio),
 			GPIOSwitch(6, gpio),
@@ -62,14 +64,17 @@ class Game:
 
 	def loop(self):
 		while True:
-			self.tick();
+			timestamp = time.time()
+			self.tick(timestamp);
+			duration = time.time() - timestamp
+			if duration < self.tick_interval:
+				time.sleep(self.tick_interval - duration)
 
-	def tick(self):
-		t = time.time()
-		states = [switch.check(t) for switch in self.switches]
+	def tick(self, timestamp):
+		states = [switch.check(timestamp) for switch in self.switches]
 		for i, state in enumerate(states):
 			if state == Circuit.open:
-				print "%f: Button %d: release" % (t, i)
+				print "%f: Button %d: release" % (timestamp, i)
 			elif state == Circuit.closed:
-				print "%f: Button %d: pressed" % (t, i)
+				print "%f: Button %d: pressed" % (timestamp, i)
 				self.pressed(i)
