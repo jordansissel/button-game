@@ -13,10 +13,11 @@ class TestGPIOSwitch(unittest.TestCase):
 	def assertStates(self, input, output, **kwargs):
 		self.mock_gpio.input = Mock(side_effect = input)
 		switch = GPIOSwitch(0, self.mock_gpio, **kwargs)
+
+		# initial state is read during __init__ of GPIOSwitch
 		self.assertEqual(switch.peek(), input[0])
 		results = [switch.check(i) for i in range(len(input) - 1)]
 		self.assertEqual(results, output)
-
 
 	def testCheckReturnsCircuitChanges(self):
 		self.assertStates([O, O, O, C, C, O], [None, None, C, None, O], debounce_period=0)

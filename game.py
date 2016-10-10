@@ -1,17 +1,21 @@
 import time
 import random
 
+from circuit import Circuit
+from gpio_switch import GPIOSwitch
+
 class Game:
-	def __init__(self, color_, neopixel_):
-		self.Color = color_
-		self.Neopixel = neopixel_
+	def __init__(self, color, neopixel, gpio, ws):
+		gpio.setmode(gpio.BCM)
+		self.Color = color
+		self.Neopixel = neopixel
 		self.LED_OFF = self.Color(0,0,0)
 		self.switches = [
-			GPIOSwitch(5),
-			GPIOSwitch(6),
-			GPIOSwitch(13),
-			GPIOSwitch(19),
-			GPIOSwitch(26)
+			GPIOSwitch(5, gpio),
+			GPIOSwitch(6, gpio),
+			GPIOSwitch(13, gpio),
+			GPIOSwitch(19, gpio),
+			GPIOSwitch(26, gpio)
 		]
 
 		self.lights = self.Neopixel(5, 18, 800000, 5, False, 50, 0, ws.WS2811_STRIP_GRB)
@@ -25,14 +29,14 @@ class Game:
 			self.lights.setPixelColor(4-x, self.Color(255,0,255))
 			self.lights.show()
 			time.sleep(0.1)
-			self.lights.setPixelColor(4-x, Game.LED_OFF)
+			self.lights.setPixelColor(4-x, self.LED_OFF)
 			self.lights.show()
 
 		for x in range(5):
 			self.lights.setPixelColor(x, self.Color(255,0,255))
 			self.lights.show()
 			time.sleep(0.1)
-			self.lights.setPixelColor(x, Game.LED_OFF)
+			self.lights.setPixelColor(x, self.LED_OFF)
 			self.lights.show()
 
 		self.__target = None
@@ -46,7 +50,7 @@ class Game:
 
 	def clear(self):
 		for x in range(5):
-			self.lights.setPixelColor(x, Game.LED_OFF)
+			self.lights.setPixelColor(x, self.LED_OFF)
 		self.lights.show()
 
 	def pressed(self, button):
