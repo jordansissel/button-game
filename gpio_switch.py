@@ -1,3 +1,23 @@
+# A debouncing switch.
+#
+# RPi.GPIO.add_event_detect exists, so why write this?
+# I wasn't able to find a way to have RPi.GPIO provide me with edge-triggered
+# events for both rising and falling. There's GPIO.add_event_detect(channel,
+# GPIO.BOTH, ...) But the callback isn't given the value of the change, so you
+# have to do the read yourself and figure out the edge direction (open/close).
+# (But, it does support debouncing, which is nice!)
+#
+# Example use:
+#
+#       import RPi.GPIO as GPIO
+#       import time
+#
+#       switch = GPIOSwitch(5, GPIO)
+#
+#       while true:
+#           state = switch.check(time.time())
+#           if state != None:
+#               print "Switch 5 state changed: %s" % state
 class GPIOSwitch:
 	DEFAULT_DEBOUNCE_PERIOD = 0.030
 
@@ -18,6 +38,9 @@ class GPIOSwitch:
 	# If moving from open -> closed, returns closed
 	# If debouncing, returns None
 	# If no state change, returns None
+	#
+	# Argument 'timestamp' should represent the current time as a number. It is
+	# used to calculate the end time of debouncing.
 	def check(self, timestamp):
 		value = self.GPIO.input(self.pin)
 		return self.update(value, timestamp)
