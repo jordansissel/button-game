@@ -11,7 +11,7 @@ def time():
 	return time
 
 @pytest.fixture
-def button(gpio):
+def button(gpio=mock.Mock()):
 	return GPIOSwitch(0, gpio, 1)
 
 @pytest.fixture

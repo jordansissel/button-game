@@ -15,6 +15,6 @@ def gpio():
 
 def test_events(time, board):
 	x = mock.Mock()
-	board.bindEvent(Board.SwitchPressed, x)
+	board.hook(Board.SwitchPressed, x)
 	board.tick(time.time())
 	assert x.called_once

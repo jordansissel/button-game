@@ -12,26 +12,31 @@ class Board:
 		self.time = time
 		self.lights = lights
 		self.switches = switches
-		self.bindings = dict()
+		self.hooks = dict()
 		self.startup()
 
 	def startup(self):
 		colorutils.scan(self.lights, self.time.sleep)
 
-	def setPixelColorRGB(self, index, red, gree, blue):
+	def setPixelColorRGB(self, index, red, green, blue):
 		self.lights.setPixelColorRGB(index, red, green, blue)
 
 	def render(self):
 		self.lights.show()
 
-	def bindEvent(self, event, callback):
-		bindings = self.bindings.setdefault(event, [])
-		bindings.append(callback)
+	def hook(self, event, callback):
+		hooks = self.hooks.setdefault(event, [])
+		hooks.append(callback)
 
-	def unbindEvent(self, event, callback):
-		bindings = self.bindings.setdefault(event, [])
-		if callback in bindings:
-			bindings.remove(callback)
+	def unhook(self, event, callback):
+		hooks = self.hooks.setdefault(event, [])
+		if callback in hooks:
+			hooks.remove(callback)
+
+	def callhook(self, event, *args, **kwargs):
+		hooks = self.hooks.setdefault(event, [])
+		for hook in hooks:
+			hook.call(*args, **kwargs)
 
 	def loop(self):
 		while True:
@@ -48,5 +53,4 @@ class Board:
 				print "%f: Button %d: release" % (timestamp, i)
 			elif state == Circuit.closed:
 				print "%f: Button %d: pressed" % (timestamp, i)
-				for callback in self.bindings.get(Board.SwitchPressed, []):
-					callback(i, timestamp)
+				self.callhook(Board.SwitchPressed, i, timestamp)

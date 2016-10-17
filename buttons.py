@@ -1,10 +1,12 @@
 from board import Board
+import random
 
 class Buttons:
 	def __init__(self, board):
 		self.board = board
 		self.tick_interval = 0.005
-		self.board.registerCallback(Board.SwitchPressed, self.pressed)
+		self.board.hook(Board.SwitchPressed, self.pressed)
+		self.target(random.randint(0,4))
 
 	def target(self, button):
 		self.clear()
@@ -15,7 +17,7 @@ class Buttons:
 	def clear(self):
 		for x in range(5):
 			self.board.setPixelColorRGB(x, 0, 0, 0)
-		self.board.show()
+		self.board.render()
 
 	def pressed(self, button, timestamp):
 		if button != self.__target:
@@ -25,7 +27,7 @@ class Buttons:
 
 	def missed(self, button, timestamp):
 		self.board.setPixelColorRGB(4-button, 255, 0, 0)
-		self.board.show()
+		self.board.render()
 		self.wins = []
 
 	def hit(self, button, timestamp):
