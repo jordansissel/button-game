@@ -1,4 +1,3 @@
-import unittest
 from mock import Mock
 from gpio_switch import GPIOSwitch
 from circuit import Circuit
@@ -6,8 +5,9 @@ from circuit import Circuit
 O = Circuit.open
 C = Circuit.closed
 
-class TestGPIOSwitch(unittest.TestCase):
-	def setUp(self):
+class TestGPIOSwitch:
+	@classmethod
+	def setup_class(self):
 		self.mock_gpio = Mock()
 
 	def assertStates(self, input, output, **kwargs):
@@ -15,9 +15,10 @@ class TestGPIOSwitch(unittest.TestCase):
 		switch = GPIOSwitch(0, self.mock_gpio, **kwargs)
 
 		# initial state is read during __init__ of GPIOSwitch
-		self.assertEqual(switch.peek(), input[0])
+		assert switch.peek() == input[0]
+
 		results = [switch.check(i) for i in range(len(input) - 1)]
-		self.assertEqual(results, output)
+		assert results == output
 
 	def testCheckReturnsCircuitChanges(self):
 		self.assertStates([O, O, O, C, C, O], [None, None, C, None, O], debounce_period=0)
