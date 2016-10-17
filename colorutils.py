@@ -1,11 +1,11 @@
 # rainbowCycle from https://github.com/jgarff/rpi_ws281x
 # small changes made for integration.
-def rainbowCycle(lights, sleep, wait_ms=12, iterations=1):
+def rainbowCycle(board, pixel_count, sleep, wait_ms=12, iterations=1):
 	"""Draw rainbow that uniformly distributes itself across all pixels."""
 	for j in range(256*iterations):
-		for i in range(lights.numPixels()):
-			lights.setPixelColorRGB(i, *wheel((((i * 256 / lights.numPixels()) + j) & 255)))
-		lights.show()
+		for i in range(pixel_count):
+			board.setPixelColorRGB(i, *wheel((((pixel_count) + j) & 255)))
+		board.render()
 		sleep(wait_ms/1000.0)
 
 # wheel from https://github.com/jgarff/rpi_ws281x
@@ -21,18 +21,18 @@ def wheel(pos):
 		pos -= 170
 		return (0, pos * 3, 255 - pos * 3)
 
-def scan(lights, sleep):
+def scan(board, sleep):
 	# Startup light sequence.
 	for x in range(5):
-		lights.setPixelColorRGB(4-x, 255,0,255)
-		lights.show()
+		board.setPixelColorRGB(4-x, 255,0,255)
+		board.render()
 		sleep(0.1)
-		lights.setPixelColorRGB(4-x, 0,0,0)
-		lights.show()
+		board.setPixelColorRGB(4-x, 0,0,0)
+		board.render()
 
 	for x in range(5):
-		lights.setPixelColorRGB(x, 255,0,255)
-		lights.show()
+		board.setPixelColorRGB(x, 255,0,255)
+		board.show()
 		sleep(0.1)
-		lights.setPixelColorRGB(x, 0,0,0) 
-		lights.show()
+		board.setPixelColorRGB(x, 0,0,0) 
+		board.render()

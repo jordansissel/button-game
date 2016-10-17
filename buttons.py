@@ -1,21 +1,24 @@
-from board import Board
+import colorutils
 import random
+from board import Board
 
 class Buttons:
 	def __init__(self, board):
 		self.board = board
+		self.time = self.board.time
 		self.tick_interval = 0.005
 		self.board.hook(Board.SwitchPressed, self.pressed)
-		self.target(random.randint(0,4))
+		self.target(random.randint(0,self.board.switch_count()))
+		self.wins = []
 
 	def target(self, button):
 		self.clear()
 		self.__target = button
-		self.board.setPixelColorRGB(4-button, 0, 255, 0)
+		self.board.setPixelColorRGB(self.board.pixel(button), 0, 255, 0)
 		self.board.render()
 
 	def clear(self):
-		for x in range(5):
+		for x in range(self.board.switch_count()):
 			self.board.setPixelColorRGB(x, 0, 0, 0)
 		self.board.render()
 
@@ -26,16 +29,16 @@ class Buttons:
 			self.hit(button, timestamp)
 
 	def missed(self, button, timestamp):
-		self.board.setPixelColorRGB(4-button, 255, 0, 0)
+		self.board.setPixelColorRGB(self.board.pixel(button), 255, 0, 0)
 		self.board.render()
 		self.wins = []
 
 	def hit(self, button, timestamp):
 		self.wins = self.wins + [timestamp]
 		if len(self.wins) >= 3 and (timestamp - self.wins[0]) < 3:
-			colorutils.rainbowCycle(self.board, self.Color)
+			colorutils.rainbowCycle(self.board, self.board.switch_count(), self.time.sleep)
 			self.wins = []
-		self.target(random.randint(0,4))
+		self.target(random.randint(0,self.board.switch_count()))
 
 if __name__ == "__main__":
 	from neopixel import Color, Adafruit_NeoPixel

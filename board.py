@@ -5,6 +5,9 @@ from circuit import Circuit
 from gpio_switch import GPIOSwitch
 import colorutils
 
+# A board for the game.
+#
+# The board is a sequence of pairs of buttons and RGB LEDs.
 class Board:
 	SwitchPressed = 1
 
@@ -14,6 +17,14 @@ class Board:
 		self.switches = switches
 		self.hooks = dict()
 		self.startup()
+
+	def switch_count(self):
+		return len(self.switches)
+
+	def pixel(self, button):
+		# The pixel addresses are in reverse order.
+		# Zero is the end of the LED strip.
+		return (self.switch_count() - button - 1)
 
 	def startup(self):
 		colorutils.scan(self.lights, self.time.sleep)
