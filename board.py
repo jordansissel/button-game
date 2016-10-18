@@ -12,7 +12,8 @@ class PixelProblem(Exception):
 #
 # The board is a sequence of pairs of buttons and RGB LEDs.
 class Board:
-	SwitchPressed = 1
+	SwitchPress = 1
+	SwitchRelease = 2
 
 	def __init__(self, lights, switches, time=time):
 		self.time = time
@@ -68,7 +69,7 @@ class Board:
 		states = [switch.check(timestamp) for switch in self.switches]
 		for i, state in enumerate(states):
 			if state == Circuit.open:
-				print "%f: Button %d: release" % (timestamp, i)
+				self.callhook(Board.SwitchRelease, i, timestamp)
 			elif state == Circuit.closed:
 				print "%f: Button %d: pressed" % (timestamp, i)
-				self.callhook(Board.SwitchPressed, i, timestamp)
+				self.callhook(Board.SwitchPress, i, timestamp)
