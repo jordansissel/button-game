@@ -5,6 +5,9 @@ from circuit import Circuit
 from gpio_switch import GPIOSwitch
 import colorutils
 
+class PixelProblem(Exception):
+	pass
+
 # A board for the game.
 #
 # The board is a sequence of pairs of buttons and RGB LEDs.
@@ -17,6 +20,7 @@ class Board:
 		self.switches = switches
 		self.hooks = dict()
 		self.startup()
+		self.tick_interval = 0.01
 
 	def switch_count(self):
 		return len(self.switches)
@@ -27,9 +31,12 @@ class Board:
 		return (self.switch_count() - button - 1)
 
 	def startup(self):
-		colorutils.scan(self.lights, self.time.sleep)
+		colorutils.scan(self)
 
 	def setPixelColorRGB(self, index, red, green, blue):
+		#print("setPixelColorRGB(%d, %d, %d, %d)"  % (index, red, green, blue))
+		if index < 0:
+			raise PixelProblem("Pixel %d is invalid" % index)
 		self.lights.setPixelColorRGB(index, red, green, blue)
 
 	def render(self):
@@ -47,7 +54,7 @@ class Board:
 	def callhook(self, event, *args, **kwargs):
 		hooks = self.hooks.setdefault(event, [])
 		for hook in hooks:
-			hook.call(*args, **kwargs)
+			hook(*args, **kwargs)
 
 	def loop(self):
 		while True:

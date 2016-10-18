@@ -17,4 +17,4 @@ def test_events(time, board):
 	x = mock.Mock()
 	board.hook(Board.SwitchPressed, x)
 	board.tick(time.time())
-	assert x.called_once
+	assert x.called_once()
