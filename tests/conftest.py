@@ -1,6 +1,7 @@
 import mock
 import pytest
 from gpio_switch import GPIOSwitch
+from reactor import Reactor
 from board import Board
 
 @pytest.fixture(scope="module")
@@ -15,7 +16,11 @@ def button(gpio=mock.Mock()):
 	return GPIOSwitch(0, gpio, 1)
 
 @pytest.fixture
-def board(button, time):
-	return Board(mock.Mock(), [button], time)
+def reactor():
+	return Reactor()
+
+@pytest.fixture
+def board(reactor, button, time):
+	return Board(mock.Mock(), [button], reactor, time)
 
 

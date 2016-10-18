@@ -1,6 +1,7 @@
 import time
 import random
 
+from reactor import Reactor
 from circuit import Circuit
 from gpio_switch import GPIOSwitch
 import colorutils
@@ -12,14 +13,14 @@ class PixelProblem(Exception):
 #
 # The board is a sequence of pairs of buttons and RGB LEDs.
 class Board:
-	SwitchPress = 1
-	SwitchRelease = 2
+	SwitchPress = Reactor.event()
+	SwitchRelease = Reactor.event()
 
-	def __init__(self, lights, switches, time=time):
+	def __init__(self, lights, switches, reactor, time=time):
 		self.time = time
 		self.lights = lights
+		self.reactor = reactor
 		self.switches = switches
-		self.hooks = dict()
 		self.startup()
 		self.tick_interval = 0.01
 
@@ -42,21 +43,6 @@ class Board:
 
 	def render(self):
 		self.lights.show()
-
-	def hook(self, event, callback):
-		hooks = self.hooks.setdefault(event, [])
-		hooks.append(callback)
-
-	def unhook(self, event, callback):
-		hooks = self.hooks.setdefault(event, [])
-		if callback in hooks:
-			hooks.remove(callback)
-
-	def callhook(self, event, *args, **kwargs):
-		hooks = self.hooks.setdefault(event, [])
-		for hook in hooks:
-			hook(*args, **kwargs)
-
 	def loop(self):
 		while True:
 			timestamp = self.time.time()
@@ -69,7 +55,7 @@ class Board:
 		states = [switch.check(timestamp) for switch in self.switches]
 		for i, state in enumerate(states):
 			if state == Circuit.open:
-				self.callhook(Board.SwitchRelease, i, timestamp)
+				self.reactor.call(Board.SwitchRelease, i, timestamp)
 			elif state == Circuit.closed:
 				print "%f: Button %d: pressed" % (timestamp, i)
-				self.callhook(Board.SwitchPress, i, timestamp)
+				self.reactor.call(Board.SwitchPress, i, timestamp)

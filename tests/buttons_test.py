@@ -14,8 +14,8 @@ def switches():
 	return [mock.Mock() for x in range(BUTTON_COUNT)]
 
 @pytest.fixture
-def board(lights, switches, time):
-	return Board(lights, switches, time)
+def board(lights, switches, reactor, time):
+	return Board(lights, switches, reactor, time)
 
 @pytest.fixture
 def lights():
@@ -51,7 +51,7 @@ def test_game_clear(game, board, time):
 	board.setPixelColorRGB.assert_has_calls(calls)
 
 # Test that 3 quick hits will result in a rainbow splash
-def test_game_3hit(game, board, time):
+def test_game_3hit_fast(game, board, time):
 	game.target(0)
 	game.press(0, time.time())
 

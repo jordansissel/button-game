@@ -1,16 +1,18 @@
 import colorutils
 import random
 from board import Board
+from reactor import Reactor
 
 class Buttons:
-	Miss = 1000
-	Hit  = 1001
+	Miss = Reactor.event()
+	Hit = Reactor.event()
 
 	def __init__(self, board):
 		self.board = board
+		self.reactor = board.reactor
 		self.time = self.board.time
 		self.tick_interval = 0.005
-		self.board.hook(Board.SwitchPress, self.press)
+		self.reactor.hook(Board.SwitchPress, self.press)
 		#self.board.hook(Board.SwitchRelease, self.release)
 		self.target(random.randint(0, self.board.switch_count() - 1))
 		self.wins = []
@@ -43,7 +45,7 @@ class Buttons:
 	def missed(self, button, timestamp):
 		assert button >= 0
 		assert button < self.board.switch_count()
-		self.board.callhook(Buttons.Miss, button, timestamp)
+		self.reactor.call(Buttons.Miss, button, timestamp)
 
 		self.board.setPixelColorRGB(self.board.pixel(button), 255, 0, 0)
 		self.board.render()
@@ -51,14 +53,14 @@ class Buttons:
 	def hit(self, button, timestamp):
 		assert button >= 0
 		assert button < self.board.switch_count()
-		self.board.callhook(Buttons.Hit, button, timestamp)
+		self.reactor.call(Buttons.Hit, button, timestamp)
 
 		self.target(random.randint(0, self.board.switch_count() - 1))
 
 class ThreeWins:
 	def __init__(self, board):
-		board.hook(Buttons.Hit, self.hit)
-		board.hook(Buttons.Miss, self.miss)
+		board.reactor.hook(Buttons.Hit, self.hit)
+		board.reactor.hook(Buttons.Miss, self.miss)
 		self.reset()
 		self.board = board
 	
