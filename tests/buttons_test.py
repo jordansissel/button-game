@@ -31,7 +31,7 @@ def test_game_hitting(game, switches, time):
 	game.hit = mock.Mock()
 	# press all buttons should fire 'hit' at least once.
 	for i in range(len(switches)):
-		game.pressed(i, time.time())
+		game.press(i, time.time())
 	game.hit.assert_called()
 
 def test_game_missing(game, switches, time):
@@ -39,7 +39,7 @@ def test_game_missing(game, switches, time):
 	# Skip first button which is the current target.
 	for i in range(1,len(switches)):
 		game.board.setPixelColorRGB = mock.Mock()
-		game.pressed(i, time.time())
+		game.press(i, time.time())
 
 		# I wired the LEDs backwards. Oops.
 		game.board.setPixelColorRGB.assert_called_with(game.board.pixel(i), 255, 0, 0)
@@ -53,14 +53,14 @@ def test_game_clear(game, board, time):
 # Test that 3 quick hits will result in a rainbow splash
 def test_game_3hit(game, board, time):
 	game.target(0)
-	game.pressed(0, time.time())
+	game.press(0, time.time())
 
 	game.target(0)
-	game.pressed(0, time.time())
+	game.press(0, time.time())
 
 	board.setPixelColorRGB = mock.Mock()
 	game.target(0)
-	game.pressed(0, time.time())
+	game.press(0, time.time())
 
 	# Rainbow will set the pixel color lots and lots of times.
 	assert len(board.setPixelColorRGB.mock_calls) > board.switch_count()*120

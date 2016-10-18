@@ -10,7 +10,8 @@ class Buttons:
 		self.board = board
 		self.time = self.board.time
 		self.tick_interval = 0.005
-		self.board.hook(Board.SwitchPressed, self.pressed)
+		self.board.hook(Board.SwitchPress, self.press)
+		#self.board.hook(Board.SwitchRelease, self.release)
 		self.target(random.randint(0, self.board.switch_count() - 1))
 		self.wins = []
 		self.setup()
@@ -31,7 +32,7 @@ class Buttons:
 			self.board.setPixelColorRGB(x, 0, 0, 0)
 		self.board.render()
 
-	def pressed(self, button, timestamp):
+	def press(self, button, timestamp):
 		assert button >= 0
 		assert button < self.board.switch_count()
 		if button != self.__target:
