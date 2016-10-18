@@ -53,10 +53,15 @@ def test_game_clear(game, board, time):
 # Test that 3 quick hits will result in a rainbow splash
 def test_game_3hit(game, board, time):
 	game.target(0)
-	game.hit(0, time.time())
-	game.hit(0, time.time())
+	game.pressed(0, time.time())
+
+	game.target(0)
+	game.pressed(0, time.time())
+
 	board.setPixelColorRGB = mock.Mock()
-	game.hit(0, time.time())
+	game.target(0)
+	game.pressed(0, time.time())
+
 	# Rainbow will set the pixel color lots and lots of times.
 	assert len(board.setPixelColorRGB.mock_calls) > board.switch_count()*120
 

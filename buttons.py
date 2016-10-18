@@ -11,8 +11,12 @@ class Buttons:
 		self.time = self.board.time
 		self.tick_interval = 0.005
 		self.board.hook(Board.SwitchPressed, self.pressed)
-		self.target(random.randint(0,self.board.switch_count()))
+		self.target(random.randint(0, self.board.switch_count() - 1))
 		self.wins = []
+		self.setup()
+
+	def setup(self):
+		ThreeWins(self.board)
 
 	def target(self, button):
 		assert button >= 0
@@ -94,5 +98,4 @@ if __name__ == "__main__":
 
 	board = Board(lights, switches)
 	buttons = Buttons(board)
-	threewins = ThreeWins(board)
 	board.loop()
